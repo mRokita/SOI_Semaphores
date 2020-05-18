@@ -31,7 +31,7 @@ void cleanup(){
 }
 
 void sigintHandler(int s){
-    printf("\nSIGINT",s);
+    std::cout << std::endl << "SIGINT" << std::endl;
     cleanup();
     exit(0);
 }
