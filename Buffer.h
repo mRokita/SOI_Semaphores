@@ -7,11 +7,13 @@
 #ifndef SOI3_BUFFER_H
 #define SOI3_BUFFER_H
 
+const int QUEUE_MAX_SIZE = 100000;
+
 using namespace boost::interprocess;
 class Buffer {
 public:
-    static inline managed_shared_memory segment = managed_shared_memory (open_or_create, "soi3_buffer_6", 128536);
-    short queue[10000];
+    static inline managed_shared_memory segment = managed_shared_memory (open_or_create, "SOI_3_buf", 1000000);
+    short queue[QUEUE_MAX_SIZE];
     int begin = 0;
     int end = 0;
     int evenCount = 0;
@@ -60,17 +62,21 @@ public:
 
 private:
     void push(short num){
-        boost::interprocess::named_semaphore sem(boost::interprocess::open_only_t(), Semaphore::PUSH_OP);
+        boost::interprocess::named_semaphore sem(boost::interprocess::open_only_t(), Semaphore::QUEUE_OP);
         sem.wait();
         queue[end] = num;
         end ++;
         num % 2 ? oddCount ++ : evenCount ++;
+        if(end >= QUEUE_MAX_SIZE){
+            std::cerr << "QUEUE MAX SIZE EXCEEDED" << std::endl;
+            destroy();
+        }
         afterOperation();
         sem.post();
     }
 
     void pop(short odd){
-        boost::interprocess::named_semaphore sem(boost::interprocess::open_only_t(), Semaphore::PUSH_OP);
+        boost::interprocess::named_semaphore sem(boost::interprocess::open_only_t(), Semaphore::QUEUE_OP);
         sem.wait();
         if(queue[begin] % 2 == odd){
             begin ++;
@@ -94,7 +100,7 @@ private:
         if(oddCount < evenCount) a2Sem.post();
         if(evenCount >= 3) b1Sem.post();
         if(oddCount >= 7) b2Sem.post();
-        sleep(1);
+        sleep(0.1);
         std::cout << oddCount << "-" << evenCount << std::endl;
     }
 
