@@ -102,7 +102,7 @@ private:
             std::cerr << "QUEUE MAX SIZE EXCEEDED" << std::endl;
             destroy();
         }
-        afterOperation();
+        processConditions();
     }
 
     void pop(short odd){
@@ -111,10 +111,10 @@ private:
             begin ++;
             odd == 1 ? oddCount -- : evenCount --;
         }
-        afterOperation();
+        processConditions();
     }
 
-    void afterOperation(){
+    void processConditions(){
         for(int i=begin; i<end; ++i){
             std::cout << queue[i] << " ";
         }
