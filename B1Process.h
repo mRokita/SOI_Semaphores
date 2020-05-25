@@ -8,7 +8,7 @@
 class B1Process : public Process {
     void run() override {
         Buffer* buf = Buffer::getInstance();
-        while (Buffer::alive) {
+        while (buf->alive) {
             buf->popEven();
         }
     }

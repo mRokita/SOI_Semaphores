@@ -9,7 +9,7 @@ public:
     void run() override {
         Buffer* buf = Buffer::getInstance();
         int cnum = 1;
-        while (Buffer::alive) {
+        while (buf->alive) {
             buf->pushOdd(cnum);
             cnum += 2;
             cnum = cnum % 100;
